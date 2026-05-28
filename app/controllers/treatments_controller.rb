@@ -4,10 +4,15 @@ class TreatmentsController < ApplicationController
 
   def new
     @treatment = @appointment.treatments.build
+    authorize @treatment
   end
 
   def create
-    @treatment = @appointment.treatments.build(treatment_params)
+    @treatment = @appointment.treatments.build
+    
+    @treatment.assign_attributes(permitted_attributes(@treatment))
+    
+    authorize @treatment
     
     if @treatment.save
       redirect_to @appointment, notice: "Treatment was successfully recorded."
@@ -17,10 +22,13 @@ class TreatmentsController < ApplicationController
   end
 
   def edit
+    authorize @treatment
   end
 
   def update
-    if @treatment.update(treatment_params)
+    authorize @treatment
+    
+    if @treatment.update(permitted_attributes(@treatment))
       redirect_to @appointment, notice: "Treatment was successfully updated."
     else
       render :edit, status: :unprocessable_entity
@@ -28,6 +36,7 @@ class TreatmentsController < ApplicationController
   end
 
   def destroy
+    authorize @treatment
     @treatment.destroy
     redirect_to @appointment, notice: "Treatment was successfully deleted."
   end
@@ -42,7 +51,4 @@ class TreatmentsController < ApplicationController
     @treatment = @appointment.treatments.find(params[:id])
   end
 
-  def treatment_params
-    params.require(:treatment).permit(:clinical_notes, :administered_at) 
-  end
 end

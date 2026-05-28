@@ -7,25 +7,37 @@
     </button>
 
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item">
-          <%= link_to "Owners", owners_path, class: "nav-link" %>
-        </li>
-        <li class="nav-item">
-          <%= link_to "Pets", pets_path, class: "nav-link" %>
-        </li>
-        <li class="nav-item">
-          <%= link_to "Vets", vets_path, class: "nav-link" %>
-        </li>
-        <li class="nav-item">
-          <%= link_to "Appointments", appointments_path, class: "nav-link" %>
-        </li>
+      <ul class="navbar-nav me-auto">
+        <% if user_signed_in? %>
+          
+          <% if current_user.admin? || current_user.vet? %>
+            <li class="nav-item">
+              <%= link_to "Owners", owners_path, class: "nav-link" %>
+            </li>
+          <% elsif current_user.owner? && current_user.owner.present? %>
+            <li class="nav-item">
+              <%= link_to "My account", owner_path(current_user.owner), class: "nav-link" %>
+            </li>
+          <% end %>
+          
+          <li class="nav-item">
+            <%= link_to "Pets", pets_path, class: "nav-link" %>
+          </li>
+          <li class="nav-item">
+            <%= link_to "Vets", vets_path, class: "nav-link" %>
+          </li>
+          <li class="nav-item">
+            <%= link_to "Appointments", appointments_path, class: "nav-link" %>
+          </li>
+          
+        <% end %>
       </ul>
+
       <ul class="navbar-nav ms-auto">
         <% if user_signed_in? %>
           <li class="nav-item">
             <span class="nav-link text-light">
-              <%= current_user.first_name  %> <%= current_user.last_name %>
+              <%= current_user.first_name %> <%= current_user.last_name %>
             </span>
           </li>
           <li class="nav-item">
@@ -35,10 +47,7 @@
           <li class="nav-item">
             <%= link_to "Log in", new_user_session_path, class: "nav-link" %>
           </li>
-          <li class="nav-item">
-            <%= link_to "Sign up", new_user_registration_path, class: "btn btn-primary ms-2" %>
-          </li>
-        <% end %>
+          <% end %>
       </ul>
     </div>
   </div>

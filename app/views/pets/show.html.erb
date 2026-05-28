@@ -50,7 +50,11 @@
 </div>
 
 <div class="d-flex gap-2">
-  <%= link_to 'Edit Pet', edit_pet_path(@pet), class: "btn btn-warning" %>
-  <%= button_to 'Delete Pet', @pet, method: :delete, data: { turbo_confirm: "Delete this pet history?" }, class: "btn btn-danger" %>
+  <% if policy(@pet).edit? %>
+    <%= link_to 'Edit Pet', edit_pet_path(@pet), class: "btn btn-warning" %>
+  <% end %>
+  <% if policy(@pet).destroy? %>
+    <%= button_to 'Delete Pet', @pet, method: :delete, data: { turbo_confirm: "Delete this pet history?" }, class: "btn btn-danger" %>
+  <% end %>
   <%= link_to 'Back to Pets', pets_path, class: "btn btn-secondary" %>
 </div>

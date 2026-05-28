@@ -1,5 +1,6 @@
 class Vet < ApplicationRecord
     has_many :appointments, dependent: :destroy
+    belongs_to :user, optional: true
     before_validation :normalize_email
 
 

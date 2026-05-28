@@ -1,5 +1,5 @@
 # Clear existing data
-puts "Limpiando la base de datos..."
+puts "Clearing data database..."
 Treatment.destroy_all
 Appointment.destroy_all
 Pet.destroy_all
@@ -7,10 +7,39 @@ Owner.destroy_all
 Vet.destroy_all
 User.destroy_all
 
+puts "Creating users..."
+
+# Admin
+User.create!(
+  first_name: "Admin",
+  last_name: "System",
+  email: "admin@vet.com",
+  password: "password123",
+  password_confirmation: "password123",
+  role: :admin
+)
+
+# Owner Users
+u_owner1 = User.create!(first_name: "Matias", last_name: "Recabarren", email: "matre@example.com", password: "password123", password_confirmation: "password123", role: :owner)
+u_owner2 = User.create!(first_name: "Max", last_name: "Garcia", email: "magar@example.com", password: "password123", password_confirmation: "password123", role: :owner)
+u_owner3 = User.create!(first_name: "Andres", last_name: "Howard", email: "anhow@example.com", password: "password123", password_confirmation: "password123", role: :owner)
+
+# Vet Users
+u_vet1 = User.create!(first_name: "Juan", last_name: "Perez", email: "jupe@vet.com", password: "password123", password_confirmation: "password123", role: :vet)
+u_vet2 = User.create!(first_name: "Felipe", last_name: "De la Noi", email: "fede@vet.com", password: "password123", password_confirmation: "password123", role: :vet)
+
+
 puts "Creating Owners..."
-owner1 = Owner.create!(first_name: "Matias", last_name: "Recabarren", email: "matre@example.com", phone: "123456789", address: "Calle 65")
-owner2 = Owner.create!(first_name: "Max", last_name: "Garcia", email: "magar@example.com", phone: "987654321", address: "Calle 51")
-owner3 = Owner.create!(first_name: "Andres", last_name: "Howard", email: "anhow@example.com", phone: "456123789", address: "Calle 70")
+# Nota cómo ahora pasamos el user asociado a cada owner
+owner1 = Owner.create!(user: u_owner1, first_name: "Matias", last_name: "Recabarren", email: "matre@example.com", phone: "123456789", address: "Calle 65")
+owner2 = Owner.create!(user: u_owner2, first_name: "Max", last_name: "Garcia", email: "magar@example.com", phone: "987654321", address: "Calle 51")
+owner3 = Owner.create!(user: u_owner3, first_name: "Andres", last_name: "Howard", email: "anhow@example.com", phone: "456123789", address: "Calle 70")
+
+puts "Creating Vets..."
+# Lo mismo para los veterinarios
+vet1 = Vet.create!(user: u_vet1, first_name: "Juan", last_name: "Perez", email: "jupe@vet.com", phone: "111111111", specialization: "General")
+vet2 = Vet.create!(user: u_vet2, first_name: "Felipe", last_name: "De la Noi", email: "fede@vet.com", phone: "222222222", specialization: "Surgery")
+
 
 puts "Creating Pets..."
 pet1 = owner1.pets.create!(name: "Advincula", species: "dog", breed: "Pug", date_of_birth: "2020-01-01", weight: 25)
@@ -19,20 +48,19 @@ pet3 = owner2.pets.create!(name: "Folagor", species: "rabbit", breed: "Mini Lop"
 pet4 = owner3.pets.create!(name: "Rene", species: "dog", breed: "Dachshund", date_of_birth: "2018-07-20", weight: 20)
 pet5 = owner2.pets.create!(name: "Whatley", species: "cat", breed: "Persian", date_of_birth: "2022-02-02", weight: 4)
 
+
 pet1.photo.attach(io: File.open(Rails.root.join('db', 'seeds', 'pets', 'pug.webp')), filename: 'pug.webp', content_type: 'image/webp')
 pet2.photo.attach(io: File.open(Rails.root.join('db', 'seeds', 'pets', 'gato.webp')), filename: 'gato.webp', content_type: 'image/webp')
 pet4.photo.attach(io: File.open(Rails.root.join('db', 'seeds', 'pets', 'salchicha.webp')), filename: 'salchicha.webp', content_type: 'image/webp')
 
-puts "Creating Vets..."
-vet1 = Vet.create!(first_name: "Juan", last_name: "Perez", email: "jupe@vet.com", phone: "111111111", specialization: "General")
-vet2 = Vet.create!(first_name: "Felipe", last_name: "De la Noi", email: "fede@vet.com", phone: "222222222", specialization: "Surgery")
 
-puts "Creando Appointments..."
+puts "Creating Appointments..."
 appt1 = Appointment.create!(pet: pet1, vet: vet1, date: 2.days.from_now, reason: "Checkup", status: :scheduled)
 appt2 = Appointment.create!(pet: pet2, vet: vet1, date: 1.week.ago, reason: "Vaccination", status: :in_progress)
 appt3 = Appointment.create!(pet: pet3, vet: vet2, date: 3.days.ago, reason: "Injury", status: :completed)
 appt4 = Appointment.create!(pet: pet4, vet: vet2, date: 1.month.from_now, reason: "Surgery", status: :cancelled)
 appt5 = Appointment.create!(pet: pet5, vet: vet1, date: 2.weeks.ago, reason: "Dermatitis", status: :completed)
+
 
 puts "Creating Treatments..."
 
@@ -116,33 +144,6 @@ Treatment.create!(
     </ul>
     <p>Use of an <strong>Elizabethan collar is mandatory</strong> 24/7 during the first week.</p>
   )
-)
-
-User.create!(
-  first_name: "Admin",
-  last_name: "System",
-  email: "admin@vet.com",
-  password: "password123",
-  password_confirmation: "password123",
-  role: :admin
-)
-
-User.create!(
-  first_name: "Doctor",
-  last_name: "Perez",
-  email: "perez@vet.com",
-  password: "password123",
-  password_confirmation: "password123",
-  role: :vet
-)
-
-User.create!(
-  first_name: "Pepe",
-  last_name: "Pupi",
-  email: "owner@vet.com",
-  password: "password123",
-  password_confirmation: "password123",
-  role: :owner
 )
 
 puts "Seed data created successfully!"

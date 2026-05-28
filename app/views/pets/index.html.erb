@@ -1,6 +1,8 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
   <h1>Pets</h1>
-  <%= link_to 'Register New Pet', new_pet_path, class: "btn btn-primary" %>
+  <% if policy(Pet).new? %>
+    <%= link_to 'Register New Pet', new_pet_path, class: "btn btn-primary" %>
+  <% end %>
 </div>
 
 <table class="table table-hover">
@@ -28,9 +30,15 @@
         <td><%= pet.owner.last_name %></td>
         <td class="text-center">
           <div class="d-flex justify-content-center gap-2">
-            <%= link_to 'Show', pet, class: "btn btn-sm btn-info" %>
-            <%= link_to 'Edit', edit_pet_path(pet), class: "btn btn-sm btn-warning" %>
-            <%= button_to 'Delete', pet, method: :delete, data: { turbo_confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" %>
+            <% if policy(pet).show? %>
+              <%= link_to 'Show', pet, class: "btn btn-sm btn-info" %>
+            <% end %>
+            <% if policy(pet).edit? %>
+              <%= link_to 'Edit', edit_pet_path(pet), class: "btn btn-sm btn-warning" %>
+            <% end %>
+            <% if policy(pet).destroy? %>
+              <%= button_to 'Delete', pet, method: :delete, data: { turbo_confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" %>
+            <% end %>
           </div>
         </td>
       </tr>

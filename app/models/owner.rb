@@ -1,9 +1,9 @@
 class Owner < ApplicationRecord
     has_many :pets, dependent: :destroy
+    belongs_to :user, optional: true
 
     before_validation :normalize_email
 
-    # 1. Validations
     validates :first_name, :last_name, :phone, presence: true
     validates :email, presence: true, 
                     uniqueness: true, 
