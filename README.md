@@ -1,7 +1,7 @@
-# VetClinic - Lab 8 (Authentication with Devise)
+# VetClinic - Lab 9 (Authorization with Pundit)
 
 ## Description
-This repository contains the implementation for Laboratory 8
+This repository contains the implementation for Laboratory 9
 
 ## Setup and Installation
 To get the application up and running, follow these steps:
@@ -33,11 +33,15 @@ To get the application up and running, follow these steps:
 
 ## Notes for the Reviewer
 
-* **Custom Attributes & Strong Parameters:** The `User` model was extended to include `first_name` and `last_name` (both required). The `ApplicationController` was configured to permit these parameters during the `:sign_up` and `:account_update` actions.
-* **Role Enum:** The `User` model includes a `role` integer enum (`:owner`, `:vet`, `:admin`). Per lab requirements, this field is purposefully **not** permitted in the strong parameters nor included in any user-facing form to prevent privilege escalation. It is only assigned via the `seeds.rb` file.
-* **Views & Styling:** Devise's default views (`sessions/new`, `registrations/new`, and `registrations/edit`) were overridden and styled with Bootstrap to match the application's UI (using `form-control`, `form-label`, `mb-3`, etc.).
-* **Error Handling:** Validation errors on Devise forms bypass the default Devise error partial and are rendered using the custom `shared/_error_messages` partial developed in Lab 6 to maintain visual consistency.
-* **Navbar Integration:** The navbar was updated to conditionally show "Sign in/Sign up" or the "Current User Name/Sign out" button depending on the authentication state. Sign out uses the `DELETE` HTTP verb as required by Turbo.
+## Notes for the Reviewer
+
+* The system enforces a strict hierarchical role matrix divided among Administrators, Veterinarians, and Pet Owners to ensure data security and functional isolation. Administrators hold unrestricted global access, allowing them full CRUD (Create, Read, Update, Delete) capabilities over all system entities, including managing clinic staff, modifying system-wide statuses, and overriding appointment schedules. Veterinarians operate with visibility into the clinic's general patient registry but are strictly constrained to data within their own medical scope; they can only schedule, view, and update appointments assigned to themselves, and they possess exclusive rights to author or modify rich-text treatments for those specific clinical sessions. Meanwhile, Pet Owners are bound to a strict multi-tenant privacy silo where they can only view or update their personal profile details and access the historical appointments, scheduling logs, and treatment notes directly associated with their own registered pets, ensuring complete confidentiality between different clients.
+* **Conditional UI Elements:** Views across the application conditionally render buttons like "New", "Edit", and "Delete" using `<% if policy(record).action? %>` blocks. If a user lacks the authorization to perform a specific action, the user interface gracefully hides the corresponding interactive components.
+* **Pre-assignment Context Fix:** To avoid the common authorization failure known as "The Empty Object Trap" during new record initiation, both `AppointmentsController` and `TreatmentsController` pre-populate empty model instances with the authenticated context (e.g., `@appointment.vet = current_user.vet`) before executing the `authorize` helper within `#new` and `#create`.
+* **Pundit Policy Scopes:** The `policy_scope` helper is uniformly applied to index actions. This ensures that records are structurally filtered at the database query level; for instance, navigating to the appointments list as an Owner strictly queries and returns data pertaining to that owner's specific pets.
+* **Permitted Attributes Delegation:** Parameter safety is delegated dynamically to Pundit in controller updates via `permitted_attributes(@appointment)`. This allows role-specific parameter filtering (e.g., an Admin can alter the appointment's assigning `vet_id` or global `status`, while a Veterinarian's updates are restricted purely to consultation details).
+* **ActionText Rich Text Notes:** Treatments incorporate `clinical_notes` managed via Rails ActionText (Trix Editor). Strong parameter parsing in `TreatmentsController` has been updated to seamlessly capture the rich text container safely alongside regular standard scalar fields.
+* **Devise Hook Protection:** System-wide fallback checks (`verify_authorized` and `verify_policy_scoped`) are applied globally to ensure strict policy usage. To avoid interference with Devise controllers, explicit dynamic skip-evaluations were added to `ApplicationController` to filter out Devise requests.
 
 ## System Dependencies
 This application relies on **libvips** for Active Storage image processing (variants, resizing, and analysis). Please ensure it is installed on your system:
