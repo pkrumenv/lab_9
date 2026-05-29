@@ -19,11 +19,14 @@ To get the application up and running, follow these steps:
    ```
    This will generate three default users (one for each system role). You can log in using any of the following credentials:
 
-   | Role   | Name           | Email                 | Password      |
-   |--------|----------------|-----------------------|---------------|
-   | Admin  | Admin System   | admin@vet.com   | password123   |
-   | Vet    | Doctor Perez   | perez@vet.com   | password123   |
-   | Owner  | Pepe Pupi      | owner@vet.com   | password123   |
+   | Role  | Name                | Email                 | Password    |
+   | :---  | :---                | :---                  | :---        |
+   | Admin | Admin System        | admin@vet.com         | password123 |
+   | Vet   | Juan Perez          | jupe@vet.com          | password123 |
+   | Vet   | Felipe De la Noi    | fede@vet.com          | password123 |
+   | Owner | Matias Recabarren   | matre@example.com     | password123 |
+   | Owner | Max Garcia          | magar@example.com     | password123 |
+   | Owner | Andres Howard       | anhow@example.com     | password123 |
 
 3. **Run the application:**
    Since this project uses `esbuild`, you must use `bin/dev` to compile JavaScript and CSS assets alongside the server.
